@@ -1,4 +1,7 @@
-from __future__ import print_function
+# train_index.py
+# Trains the neural net to output indices for sorted values
+# Version 1.0
+# Does not work yet
 
 import generate_data as gd
 import tensorflow as tf

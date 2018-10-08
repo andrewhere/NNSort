@@ -1,4 +1,8 @@
-from __future__ import print_function
+# train_value.py
+# Trains the neural net to output sorted array directly
+# Version 1.0
+# Does not output exact values, loss needs to be reduced
+
 
 import generate_data as gd
 import tensorflow as tf
