@@ -3,17 +3,19 @@ from __future__ import print_function
 import generate_data as gd
 import tensorflow as tf
 import sortedness as st
+import numpy as np
+import time
 
 def train(array_start, array_end, num_input, num_array, num_test):
     # Parameters
-    learning_rate = 0.6
+    learning_rate = 0.1
     num_steps = 6000
     batch_size = 200
     display_step = 100
 
     # Network Parameters
-    n_hidden_1 = 40 # 1st layer number of neurons
-    n_hidden_2 = 40 # 2nd layer number of neurons
+    n_hidden_1 = 250 # 1st layer number of neurons
+    n_hidden_2 = 250# 2nd layer number of neurons
     #num_input = 5 # MNIST data input (img shape: 28*28)
     num_classes = num_input # MNIST total classes (0-9 digits)
     #array_start = 0
@@ -51,7 +53,7 @@ def train(array_start, array_end, num_input, num_array, num_test):
     # Construct model
     logits = neural_net(X)
     prediction = (logits)
-
+    prediction_new = tf.round(prediction)
     # Define loss and optimizer
     #loss_op = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(
     #    logits=logits, labels=Y))
@@ -61,7 +63,7 @@ def train(array_start, array_end, num_input, num_array, num_test):
     train_op = optimizer.minimize(loss_op)
 
     # Evaluate model
-    correct_pred = tf.equal(tf.contrib.framework.argsort(prediction), tf.contrib.framework.argsort(Y))
+    correct_pred = tf.equal(prediction_new, Y)
     #correct_pred = tf.equal(tf.convert_to_tensor(prediction), tf.convert_to_tensor(Y))
 
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
@@ -110,13 +112,15 @@ def train(array_start, array_end, num_input, num_array, num_test):
         #test_x = [[0.3, 0.9, 0.7, 0.4, 0.1],[0.6, 0.3, 0.1, 0.9, 0.5], [0.2, 0.4, 0.6, 0.9, 0.7]]
 
         pred, pred_acc = sess.run([prediction, accuracy], feed_dict = {X: norm_test_x, Y:test_y})
+        pred_round = [np.round(i) for i in pred]
         print("Test Labels: ", test_y_arg)
 
-    return pred, pred_acc
+    return pred_round, pred_acc
 
 
 prediction, test_acc = train(0, 10, 5, num_array=100000, num_test=3)
 print("Test Pred: ", prediction)
+#get score of sortedness
 bad_score = 0
 bad_count = 0
 for i in range(len(prediction)):
