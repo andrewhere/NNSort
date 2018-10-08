@@ -64,9 +64,29 @@ def argsort_list(array):
         temp = np.argsort(i)
         arg_array.append(list(temp))
     return arg_array
+
+
+def N2_sort(array):
+    """
+    input: List[List[int]]
+    return type: List[List[int]]
+    """
+    for i in array:
+        for j in range(len(i)-1, -1, -1):
+            for k in range(1, j+1):
+                if i[k-1] > i[k]:
+                    temp = i[k-1]
+                    i[k-1] = i[k]
+                    i[k] = temp
+
+    return array
+
+
+
 """
 a = [[3, 5, 1], [1 , 2, 3]]
-print(argsort_list(a))
+print(N2_sort(a))
+
 
 list = [[1.0096184e+14, 1.0122951e+14, 1.0132296e+14]]
 print(denormalize(0.3, 0.9, list))

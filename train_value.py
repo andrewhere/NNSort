@@ -14,7 +14,7 @@ def train(array_start, array_end, num_input, num_array, num_test):
     learning_rate = 0.1
     num_steps = 6000
     batch_size = 200
-    display_step = 100
+    display_step = 1000
 
     # Network Parameters
     n_hidden_1 = 40 # 1st layer number of neurons
@@ -81,8 +81,22 @@ def train(array_start, array_end, num_input, num_array, num_test):
     arg_labels = gd.argsort_list(array)
     test_x = gd.gen_array(num_input, array_start, array_end, num_test)
     norm_test_x = gd.normalize(array_start, array_end, test_x)
-    test_y = gd.sorted_array(norm_test_x)
+
     test_y_arg = gd.argsort_list(test_x)
+
+
+    #compare to regular algorithms
+    # 1. sorted() built-in Timsort algorithms O(NlogN)
+    # 2. O(N^2) algorithms
+    merge_start = time.time()
+    test_y = gd.sorted_array(norm_test_x)
+    merge_end = time.time()
+
+    N2_start = time.time()
+    out = gd.N2_sort(norm_test_x)
+    N2_end = time.time()
+
+
     # Start training
     with tf.Session() as sess:
 
@@ -118,22 +132,25 @@ def train(array_start, array_end, num_input, num_array, num_test):
 
         print("Optimization Finished!")
         #test_x = [[0.3, 0.9, 0.7, 0.4, 0.1],[0.6, 0.3, 0.1, 0.9, 0.5], [0.2, 0.4, 0.6, 0.9, 0.7]]
-
+        ts = time.time()
         pred, pred_acc = sess.run([prediction, accuracy], feed_dict = {X: norm_test_x, Y:test_y})
-        print("Expected Output: ", test_y)
-
+        tend = time.time()
+        #print("Expected Output: ", test_y)
+        print("Testing Complete, Time Used: ", (tend-ts))
+        print("Time Used with MergeSort: ", (merge_end-merge_start))
+        print("Time Used with N2 sort: ", (N2_end-N2_start))
     return pred, pred_acc
 
 
-prediction, test_acc = train(0, 10, 5, num_array=100000, num_test=3)
-print("Test Pred: ", prediction)
+prediction, test_acc = train(0, 100, 10, num_array=100000, num_test=100000)
+#print("Test Pred: ", prediction)
 #get score of sortedness
 bad_score = 0
 bad_count = 0
 for i in range(len(prediction)):
     score = st.get_score(list(prediction[i]))
     if (score < 1.0):
-        print(score)
+        #print(score)
         bad_score += score
         bad_count += 1
 
